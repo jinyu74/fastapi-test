@@ -1,22 +1,61 @@
+from datetime import datetime, timedelta
 from typing import List
-from uuid import UUID, uuid4
-from fastapi import FastAPI, HTTPException
-from models import Gender, Role, User, UserUpdateRequest
+from fastapi import FastAPI, HTTPException, Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials, OAuth2PasswordRequestForm
+from models import Gender, Role, User, UserUpdateRequest, UserPayload
+from jose import jwt
+from jose.exceptions import ExpiredSignatureError, JWSSignatureError
+import bcrypt
+from pydantic import EmailStr
 
 app = FastAPI()
+security = HTTPBearer()
+
+ALGOROTHM = "HS256"
+SECRET_KEY = "efd5b699cead31f4042c56f9896d2f925fa2479320a3a5fbc5dcaf52bcd4a77e"
 
 db: List[User] = [
     User(
-        id=uuid4(), first_name="James", last_name="Yu", gender=Gender.female, roles=[Role.student]
+        id="james.yu@vuno.co",
+        first_name="James",
+        last_name="Yu",
+        gender=Gender.female,
+        roles=[Role.student],
+        password="$2b$12$oBIZlFpv95ZsSZOS1ecqTuDuZmTt5ChqeZCcDPQoqLyGkaovOhthi",
     ),
     User(
-        id=uuid4(),
+        id="nathan.drake@vuno.co",
         first_name="Nathan",
         last_name="Drake",
         gender=Gender.male,
         roles=[Role.admin, Role.user],
+        password="$2b$12$oBIZlFpv95ZsSZOS1ecqTuDuZmTt5ChqeZCcDPQoqLyGkaovOhthi",
     ),
 ]
+
+
+async def create_asccess_token(data: User, exp: timedelta = None):
+    expire = datetime.utcnow() + (exp or timedelta(minutes=5))
+    user_info = UserPayload(**data.dict(), exp=expire)
+
+    return jwt.encode(user_info.dict(), SECRET_KEY, algorithm=ALGOROTHM)
+
+
+async def get_user(cred: HTTPAuthorizationCredentials = Depends(security)):
+    token = cred.credentials
+    try:
+        decoded_data = jwt.decode(token, SECRET_KEY, ALGOROTHM)
+    except ExpiredSignatureError:
+        raise HTTPException(401, "Expired")
+    except JWSSignatureError:
+        raise HTTPException(403, "Wrong Token")
+    user_info = User(**decoded_data)
+
+    for user in db:
+        if user.id == user_info.id:
+            return user
+
+    raise HTTPException(404, "Not Found User")
 
 
 @app.get("/")
@@ -31,12 +70,15 @@ async def fetch_users():
 
 @app.post("/api/v1/users")
 async def register_user(user: User):
+    hashed_password = bcrypt.hashpw(user.password.encode(), bcrypt.gensalt())
+    user.password = hashed_password.decode()
     db.append(user)
+
     return {"id": user.id}
 
 
 @app.delete("/api/v1/users/{user_id}")
-async def delete_user(user_id: UUID):
+async def delete_user(user_id: EmailStr):
     for user in db:
         if user.id == user_id:
             db.remove(user)
@@ -45,7 +87,7 @@ async def delete_user(user_id: UUID):
 
 
 @app.put("/api/v1/users/{user_id}")
-async def update_user(user_update: UserUpdateRequest, user_id: UUID):
+async def update_user(user_update: UserUpdateRequest, user_id: EmailStr):
     for user in db:
         if user.id == user_id:
             if user_update.first_name is not None:
@@ -57,3 +99,19 @@ async def update_user(user_update: UserUpdateRequest, user_id: UUID):
             if user_update.roles is not None:
                 user.roles = user_update.roles
     raise HTTPException(status_code=404, detail=f"user with id: {user_id} does not exists")
+
+
+@app.post("/api/v1/login")
+async def issue_token(data: OAuth2PasswordRequestForm = Depends()):
+    for user in db:
+        if user.id == data.username:
+            if bcrypt.checkpw(data.password.encode(), user.password.encode()):
+                return await create_asccess_token(user, exp=timedelta(minutes=5))
+            raise HTTPException(401)
+
+    raise HTTPException(status_code=404, detail=f"user with id: {data.username} does not exists")
+
+
+@app.get("/api/v1/users/me")
+async def get_current_user(user: dict = Depends(get_user)):
+    return user

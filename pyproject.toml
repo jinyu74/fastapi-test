@@ -10,6 +10,10 @@ fastapi = "^0.79.0"
 uvicorn = {extras = ["standard"], version = "^0.18.2"}
 black = "^22.6.0"
 flake8 = "^5.0.4"
+python-jose = "^3.3.0"
+bcrypt = "^3.2.2"
+python-multipart = "^0.0.5"
+pydantic = {extras = ["email"], version = "^1.9.2"}
 
 [tool.poetry.dev-dependencies]
 

@@ -1,7 +1,7 @@
+from datetime import datetime
 from enum import Enum
 from typing import List
-from uuid import UUID, uuid4
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 
 class Gender(str, Enum):
@@ -16,12 +16,17 @@ class Role(str, Enum):
 
 
 class User(BaseModel):
-    id: UUID | None = uuid4()
+    id: EmailStr
     first_name: str
     last_name: str
     middle_name: str | None
     gender: Gender
     roles: List[Role]
+    password: str
+
+
+class UserPayload(User):
+    exp: datetime
 
 
 class UserUpdateRequest(BaseModel):
