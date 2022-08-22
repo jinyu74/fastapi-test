@@ -29,6 +29,15 @@ class UserPayload(User):
     exp: datetime
 
 
+class UserOut(BaseModel):
+    id: EmailStr
+    first_name: str
+    last_name: str
+    middle_name: str | None
+    gender: Gender
+    roles: List[Role]
+
+
 class UserUpdateRequest(BaseModel):
     first_name: str | None
     last_name: str | None

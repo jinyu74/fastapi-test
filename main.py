@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta
 from typing import List
-from fastapi import FastAPI, HTTPException, Depends
+from unittest import async_case
+from fastapi import FastAPI, HTTPException, Depends, status, Cookie, Header
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials, OAuth2PasswordRequestForm
-from models import Gender, Role, User, UserUpdateRequest, UserPayload
+from models import Gender, Role, User, UserOut, UserUpdateRequest, UserPayload
 from jose import jwt
 from jose.exceptions import ExpiredSignatureError, JWSSignatureError
 import bcrypt
@@ -63,12 +64,12 @@ async def root():
     return {"Hello": "world"}
 
 
-@app.get("/api/v1/users")
+@app.get("/api/v1/users", response_model=List[UserOut])
 async def fetch_users():
     return db
 
 
-@app.post("/api/v1/users")
+@app.post("/api/v1/users", status_code=status.HTTP_201_CREATED)
 async def register_user(user: User):
     hashed_password = bcrypt.hashpw(user.password.encode(), bcrypt.gensalt())
     user.password = hashed_password.decode()
@@ -112,6 +113,16 @@ async def issue_token(data: OAuth2PasswordRequestForm = Depends()):
     raise HTTPException(status_code=404, detail=f"user with id: {data.username} does not exists")
 
 
-@app.get("/api/v1/users/me")
+@app.get("/api/v1/users/me", response_model=UserOut)
 async def get_current_user(user: dict = Depends(get_user)):
     return user
+
+
+@app.get("/cookie")
+async def get_cookies(ga: str = Cookie(None)):
+    return {"ga": ga}
+
+
+@app.get("/header")
+async def get_headers(x_token: str = Header(None, title="토큰")):
+    return {"X-Token": x_token}
