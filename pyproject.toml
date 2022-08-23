@@ -16,6 +16,7 @@ python-multipart = "^0.0.5"
 pydantic = {extras = ["email"], version = "^1.9.2"}
 pytest-asyncio = "^0.19.0"
 pytest-cov = "^3.0.0"
+redis = "^4.3.4"
 
 [tool.poetry.dev-dependencies]
 
