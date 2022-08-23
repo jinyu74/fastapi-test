@@ -623,7 +623,7 @@ def get_headers(x_token: str = Header(None, title="토큰")):
 http :8000/header X-Token:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Imppbi55dUB2dW5vLmNvIiwiZmlyc3RfbmFtZSI6Ill1IiwibGFzdF9uYW1lIjoiSmluIiwibWlkZGxlX25hbWUiOiJKb2VsIiwiZ2VuZGVyIjoibWFsZSIsInJvbGVzIjpbImFkbWluIl0sInBhc3N3b3JkIjoiJDJiJDEyJDFSVHdFYy5tNUlxQTIydU0zaGswc2VnUkpHekROSC9BWHJHL3RrV1ljc095MVIxME94bXJLIiwiZXhwIjoxNjYxMTQwODAwfQ.zi7Rqk7CIVrFQh3AzTIp9ErldUecgAykWSV5u-jgUQI
 ```
 
-추가로 `Header`는 다른 클래스와 다르게 `convert_underscores` 옵션을 갖는데 `False`를 줄 경우 하이픈을 언더스코어로 변환하지 않는다.  `X-token`이 아니라 `X_Token`이라는 헤더를 위해 존재하는 옵션이지만 애초에 언더스코어를 사용하는 건 관례를 벗어나므로 웬만해서는 하지 않아야 한다.
+추가로 `Header`는 다른 클래스와 다르게 `convert_underscores` 옵션을 갖는데 `False`를 줄 경우 하이픈을 언더스코어로 변환하지 않는다.  `X-token`이 아니라 `X_Token`이라는 헤더를 위해 존재하는 옵션이지만 애초에 언더스코어를 사용하는 건 관례를 벗어나므로 웬만해서는 하지 않아야 .
 
 
 
