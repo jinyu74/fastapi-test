@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 from typing import List
-from unittest import async_case
 from fastapi import FastAPI, HTTPException, Depends, status, Cookie, Header
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials, OAuth2PasswordRequestForm
 from models import Gender, Role, User, UserOut, UserUpdateRequest, UserPayload
@@ -107,7 +106,7 @@ async def issue_token(data: OAuth2PasswordRequestForm = Depends()):
     for user in db:
         if user.id == data.username:
             if bcrypt.checkpw(data.password.encode(), user.password.encode()):
-                return await create_asccess_token(user, exp=timedelta(minutes=5))
+                return await  (user, exp=timedelta(minutes=5))
             raise HTTPException(401)
 
     raise HTTPException(status_code=404, detail=f"user with id: {data.username} does not exists")

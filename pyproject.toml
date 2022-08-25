@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "learn fastapi"
 version = "0.1.0"
-description = "'fas 학습하기'"
+description = "'fastapi 학습하기'"
 authors = ["Jin Yu/유진 <jin.yu@vuno.co>"]
 
 [tool.poetry.dependencies]
@@ -17,6 +17,9 @@ pydantic = {extras = ["email"], version = "^1.9.2"}
 pytest-asyncio = "^0.19.0"
 pytest-cov = "^3.0.0"
 redis = "^4.3.4"
+SQLAlchemy = "^1.4.40"
+passlib = "^1.7.4"
+psycopg2-binary = "^2.9.3"
 
 [tool.poetry.dev-dependencies]
 
