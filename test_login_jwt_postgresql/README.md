@@ -93,7 +93,7 @@ $ openssl rand -hex 32
 3576b9741008af2f5d1f21672d92f0b38266b2441991b34e5f0ae4e41bb0e75b
 ```
 
-##### .env
+##### .env 만들기
 
 ```bash
 SECRET_KEY='3576b9741008af2f5d1f21672d92f0b38266b2441991b34e5f0ae4e41bb0e75b'
