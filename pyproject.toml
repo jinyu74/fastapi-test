@@ -20,6 +20,8 @@ redis = "^4.3.4"
 SQLAlchemy = "^1.4.40"
 passlib = "^1.7.4"
 psycopg2-binary = "^2.9.3"
+celery = "^5.2.7"
+flower = "^1.2.0"
 
 [tool.poetry.dev-dependencies]
 
